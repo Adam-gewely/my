@@ -1,1 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Single Page App</title>
+</head>
+<body>
+  <div id="app"></div>
 
+  <script>
+    // ----- STYLE INJECTION -----
+    const style = document.createElement('style');
+    style.textContent = `
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: #f4f6f8;
+        color: #333;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        padding: 1em 2em;
+        background: #6200ea;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1em;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .nav-links a:hover {
+        text-decoration: underline;
+      }
+
+      .container {
+        padding: 2em;
+      }
+
+      .card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5em;
+        margin: 1em 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      h1 {
+        color: #6200ea;
+      }
+
+      button {
+        padding: 0.6em 1.2em;
+        border: none;
+        background: #03dac6;
+        color: white;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #018786;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // ----- MAIN RENDER FUNCTION -----
+    const app = document.getElementById('app');
+
+    function renderPage(content) {
+      app.innerHTML = '';
+      app.appendChild(navbar());
+      const container = document.createElement('div');
+      container.className = 'container';
+      container.appendChild(content);
+      app.appendChild(container);
+    }
+
+    // ----- NAVBAR -----
+    function navbar() {
+      const nav = document.createElement('div');
+      nav.className = 'navbar';
+
+      const title = document.createElement('div');
+      title.textContent = 'My SPA';
+
+      const links = document.createElement('div');
+      links.className = 'nav-links';
+
+      const homeLink = document.createElement('a');
+      homeLink.textContent = 'Home';
+      homeLink.onclick = () => navigate('home');
+
+      const testLink = document.createElement('a');
+      testLink.textContent = 'Test';
+      testLink.onclick = () => navigate('test');
+
+      links.appendChild(homeLink);
+      links.appendChild(testLink);
+
+      nav.appendChild(title);
+      nav.appendChild(links);
+      return nav;
+    }
+
+    // ----- ROUTING -----
+    function navigate(route) {
+      window.history.pushState({}, '', `#${route}`);
+      router();
+    }
+
+    function router() {
+      const route = location.hash.replace('#', '') || 'home';
+      if (route === 'home') renderPage(homePage());
+      else if (route === 'test') renderPage(testPage());
+      else renderPage(notFoundPage());
+    }
+
+    window.onpopstate = router;
+
+    // ----- HOME PAGE -----
+    function homePage() {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <h1>Welcome to Home</h1>
+        <div class="card">
+          <h3>Overview</h3>
+          <p>This is the home page of the SPA. It’s clean and modern.</p>
+        </div>
+        <div class="card">
+          <h3>Quick Actions</h3>
+          <button onclick="alert('Action executed!')">Run Action</button>
+        </div>
+      `;
+      return div;
+    }
+
+    // ----- TEST PAGE -----
+    function testPage() {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <h1>Test Page</h1>
+        <div class="card">
+          <h3>Test Feature</h3>
+          <p>This is a test page to try out components.</p>
+          <button onclick="alert('Test successful!')">Test Now</button>
+        </div>
+        <div class="card">
+          <h3>Data Preview</h3>
+          <ul>
+            <li>Item 1 - ✅</li>
+            <li>Item 2 - ✅</li>
+            <li>Item 3 - ✅</li>
+          </ul>
+        </div>
+      `;
+      return div;
+    }
+
+    // ----- 404 PAGE -----
+    function notFoundPage() {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <h1>404 - Not Found</h1>
+        <p>Sorry, the page you're looking for doesn't exist.</p>
+      `;
+      return div;
+    }
+
+    // ----- INITIALIZE -----
+    router();
+  </script>
+</body>
+</html>
